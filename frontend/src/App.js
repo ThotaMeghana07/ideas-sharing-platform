@@ -1,4 +1,4 @@
- import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -21,7 +21,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           
-
           {/* Protected Routes */}
           <Route 
             path="/ideas" 
