@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+  import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../auth/AuthContext';
 
@@ -10,7 +10,7 @@ const SignUp = () => {
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
-  const { signup, sendOTP } = useContext(AuthContext);
+  const { signup } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,14 +25,15 @@ const SignUp = () => {
     const newErrors = {};
     if (!formData.username.trim()) newErrors.username = 'Username required';
     if (!formData.email.match(/^\S+@\S+\.\S+$/)) newErrors.email = 'Invalid email';
-    if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+    if (formData.password.length < 6) newErrors.password = 'Password too short';
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords dont match' ;
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
       const userData = {
@@ -40,82 +41,53 @@ const SignUp = () => {
         email: formData.email,
         password: formData.password
       };
-      
-      // Step 1: Sign up (stores in pendingUser)
       if (signup(userData)) {
-        // Step 2: Send OTP
-        if (sendOTP()) {
-          // Step 3: Redirect to OTP verification with email
-          navigate('/verify-otp', { 
-            state: { 
-              email: formData.email,
-              message: "We've sent a 6-digit code to your email"
-            } 
-          });
-        }
+        navigate('/ideas');
       }
     }
   };
 
   return (
     <div className="auth-form">
-      <h2>Create Your Account</h2>
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <input
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            className={errors.username ? 'error-input' : ''}
-          />
-          {errors.username && <p className="error-message">{errors.username}</p>}
-        </div>
+        <input
+          name="username"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleChange}
+        />
+        {errors.username && <p className="error">{errors.username}</p>}
         
-        <div className="form-group">
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className={errors.email ? 'error-input' : ''}
-          />
-          {errors.email && <p className="error-message">{errors.email}</p>}
-        </div>
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        {errors.email && <p className="error">{errors.email}</p>}
         
-        <div className="form-group">
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className={errors.password ? 'error-input' : ''}
-          />
-          {errors.password && <p className="error-message">{errors.password}</p>}
-        </div>
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+        />
+        {errors.password && <p className="error">{errors.password}</p>}
         
-        <div className="form-group">
-          <input
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className={errors.confirmPassword ? 'error-input' : ''}
-          />
-          {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
-        </div>
+        <input
+          name="confirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+        />
+        {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
         
-        <button type="submit" className="submit-btn">
-          Sign Up
-        </button>
+        <button type="submit">Sign Up</button>
       </form>
-      
-      <p className="login-redirect">
-        Already have an account? <a href="/login">Log in</a>
-      </p>
     </div>
   );
 };
