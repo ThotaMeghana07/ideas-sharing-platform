@@ -10,7 +10,7 @@ const SignUp = () => {
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
-  const { signup } = useContext(AuthContext);
+  const { signUp } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -41,11 +41,12 @@ const SignUp = () => {
         email: formData.email,
         password: formData.password
       };
-      if (signup(userData)) {
+      if (signUp(userData)) {
         navigate('/ideas');
       }
     }
   };
+  console.log("Signup route loaded");
 
   return (
     <div className="auth-form">

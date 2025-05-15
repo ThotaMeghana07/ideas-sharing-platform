@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   // ✅ Add this new function
  
 
-  const signup = (userData) => {
+  const signUp = (userData) => {
     setUsers([...users, userData]);
     setCurrentUser(userData);
     return true;
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider 
       value={{ 
         currentUser, 
-        signup, 
+        signUp, 
         login, 
         logout,
           // ✅ Now exposed to all components

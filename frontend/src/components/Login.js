@@ -1,5 +1,5 @@
-  import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+ import React, { useState, useContext } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from '../auth/AuthContext';
 
 const Login = () => {
@@ -13,10 +13,15 @@ const Login = () => {
     e.preventDefault();
     setError('');
     
-    if (login(email, password)) {
-      navigate('/ideas'); // Redirect to ideas page
-    } else {
-      setError('Invalid email or password');
+    try {
+      const loginSuccess = await login(email, password);
+      if (loginSuccess) {
+        navigate('/ideas');
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
     }
   };
 
@@ -42,7 +47,7 @@ const Login = () => {
         <button type="submit">Login</button>
       </form>
       <p>
-        Don't have an account? <a href="/signup">Sign up</a>
+        Don't have an account? <Link to="/signup">Sign up</Link>
       </p>
     </div>
   );
