@@ -4,19 +4,24 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
+  height: 100%;
+  overflow-x: hidden;
+   padding-top: 60px;
 }
 
 /* Navbar */
 .Navbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  background-color: #2d89ef;
+  align-items:center;
+  background-color: #cbcad7;
   padding: 15px 20px;
   color: white;
-  position: sticky;
+  position:fixed;
+  width: 98%;
   top: 0;
   z-index: 1000;
+  height: 30px;
 }
 
 .Navbar .logo {
@@ -369,3 +374,5 @@ body {
   text-decoration: none;
   font-weight: 500;
 }
+/* Add this to your global styles or component-specific CSS */
+ 

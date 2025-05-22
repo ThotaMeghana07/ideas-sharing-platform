@@ -45,12 +45,10 @@ const IdeaSharing = () => {
       {/* Header */}
       <header className="app-header">
         <div className="brand">
-          <img src="https://via.placeholder.com/40" alt="Logo" className="logo" />
+          <img src="" alt="Logo" className="logo" />
           <h1>Student Spark</h1>
         </div>
-        <button className="profile-btn">
-          <img src="https://i.pravatar.cc/150?img=5" alt="Profile" className="profile-pic" />
-        </button>
+        
       </header>
 
       {/* Main Content */}

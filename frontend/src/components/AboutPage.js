@@ -1,11 +1,16 @@
+ // src/pages/AboutPage.js
+import React from 'react';
+import SvgParallaxScroll from '../components/SvgParallaxScroll';
+import AboutPageDetails from '../components/AboutPageDetails'; // <-- Import the NEW component
+import './AboutPage.css';
 
 const AboutPage = () => {
-  return (
-    <section className="about">
-      <h2>About Student Spark</h2>
-      <p>Your about content here...</p>
-    </section>
-  );
+    return (
+        <div className="about-page">
+            <SvgParallaxScroll />
+            <AboutPageDetails /> {/* <-- Use the NEW component here */}
+        </div>
+    );
 };
 
 export default AboutPage;
