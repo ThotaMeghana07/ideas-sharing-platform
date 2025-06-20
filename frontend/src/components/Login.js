@@ -1,41 +1,43 @@
- import React, { useState, useContext } from 'react';
+ // src/components/Login.js
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import AuthContext from '../auth/AuthContext';
+import { useAuth } from '../auth/AuthContext'; // Import useAuth
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState(''); // Can be email or username
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
+  // We'll use error and isLoading from the AuthContext now
+  const { loginUser, isLoading, error: authError, clearError } = useAuth(); // Get new context values
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    
-    try {
-      const loginSuccess = await login(email, password);
-      if (loginSuccess) {
-        navigate('/ideas');
-      } else {
-        setError('Invalid email or password');
-      }
-    } catch (err) {
-      setError('Login failed. Please try again.');
+    if (authError) clearError(); // Clear previous auth errors before a new attempt
+
+    const result = await loginUser({ emailOrUsername, password }); // Call the new loginUser
+
+    if (result.success) {
+      navigate('/ideas'); // Or to wherever you want to redirect after login
+    } else {
+      // Error will be set in AuthContext and can be displayed via authError
+      // No need to set local error state unless you want specific messages here
+      console.error("Login failed:", result.error?.message || 'Unknown login error');
     }
   };
 
   return (
     <div className="auth-form">
       <h2>Login</h2>
-      {error && <p className="error">{error}</p>}
+      {/* Display error from AuthContext */}
+      {authError && <p className="error">{authError.message || 'Login failed. Please try again.'}</p>}
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text" // Changed to text to allow username or email
+          placeholder="Email or Username"
+          value={emailOrUsername}
+          onChange={(e) => setEmailOrUsername(e.target.value)}
           required
+          disabled={isLoading} // Disable input when loading
         />
         <input
           type="password"
@@ -43,8 +45,11 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={isLoading} // Disable input when loading
         />
-        <button type="submit">Login</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
       <p>
         Don't have an account? <Link to="/signup">Sign up</Link>

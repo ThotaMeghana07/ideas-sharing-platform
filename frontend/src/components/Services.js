@@ -16,7 +16,7 @@ const Services = () => {
           <div className="icon-wrapper">
             <FaLightbulb className="service-icon" />
           </div>
-          <h3>Share Your Innovative Ideas</h3>
+          <h3>Share Your Innovative Ideas To The People</h3>
           <p>Post your ideas and get valuable input from others.</p>
           <button 
             onClick={handlePostIdeasClick} 

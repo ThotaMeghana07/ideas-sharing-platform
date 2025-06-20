@@ -230,3 +230,155 @@
         flex-direction: column;
     }
 }
+/* src/components/AboutPageDetails.css */
+
+/* ... (All your existing styles for .about-details-container, .vision-mission-section,
+          .why-join-section, .our-team-section (the original one with grad photo),
+          .connect-with-us etc. should remain) ... */
+
+/* --- STYLES FOR THE REVISED "CORE TEAM MEMBERS" HORIZONTAL SECTION --- */
+
+.core-team-horizontal-section {
+    padding: 40px 20px; /* Padding around the section */
+    background-color: #f8f9fa; /* Light background to distinguish it slightly */
+    text-align: center; /* Center the title and the CTA */
+    margin-top: 40px; /* Space from the section above */
+}
+
+.core-team-title { /* Optional title for this section */
+    font-size: 2.2em; /* Adjust as needed */
+    color: #0056b3; /* Consistent blue */
+    margin-bottom: 40px;
+}
+
+.core-team-horizontal-grid {
+    display: flex;
+    justify-content: center; /* Center the cards if they don't fill the width */
+    align-items: stretch; /* Make cards of equal height if content varies slightly */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 30px; /* Space between cards */
+    margin-bottom: 40px; /* Space before the "Be a Part" CTA */
+}
+
+.core-team-horizontal-card {
+    background-color: #fff;
+    border-radius: 12px; /* More rounded corners for a softer look */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    width: 280px; /* Adjust width as needed for 3 cards horizontally, or more */
+    /* max-width: 300px; */
+    overflow: hidden; /* To ensure border-radius clips the image */
+    display: flex;
+    flex-direction: column; /* Stack image and details vertically within the card */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.core-team-horizontal-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.core-team-member-photo-container {
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the circular area, cropping if necessary */
+    display: block;
+}
+
+.core-team-member-photo {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    /* height: 100%; */ /* If container has fixed height */
+    /* object-fit: cover; */ /* If container has fixed height, to cover and crop */
+    display: block; /* Remove extra space below image */
+    /* border-bottom: 1px solid #eee; */ /* Optional separator */
+}
+
+.core-team-member-details {
+    padding: 20px;
+    text-align: center; /* Center text within the details block */
+    flex-grow: 1; /* Allows details to expand if card heights vary */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center content if card has fixed height */
+}
+
+/* The small "Team Member" label with icon is optional for this design.
+   If you keep it, uncomment and style it.
+.core-team-member-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 0.85em;
+    color: #777;
+}
+.core-member-label-icon {
+    width: 16px;
+    height: 16px;
+}
+*/
+
+.core-team-member-name {
+    font-size: 1.4em; /* Larger name */
+    font-weight: 600; /* Semi-bold */
+    color: #2c3e50; /* Darker, professional color */
+    margin-top: 0; /* Adjusted from previous */
+    margin-bottom: 5px; /* Space below name */
+    text-transform: uppercase;
+}
+
+.core-team-member-role {
+    font-size: 1em;
+    color: #007bff; /* Use a primary color for the role for emphasis */
+    font-weight: 500;
+    margin-bottom: 10px; /* Space below role */
+}
+
+/* Optional: Bio and Social Links styling */
+.core-team-member-bio {
+    font-size: 0.85em;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+.core-team-social-links a {
+    margin: 0 5px;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 1.2em; /* For social icons */
+}
+.core-team-social-links a:hover {
+    color: #0056b3;
+}
+
+
+.core-team-join-cta { /* This is the "Be a Part of Student Spark" text */
+    margin-top: 0px; /* Already has margin-bottom from the grid */
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #333;
+}
+.core-team-join-cta p {
+    margin: 0;
+}
+
+
+/* Responsive adjustments for core team horizontal layout */
+@media (max-width: 992px) { /* Tablet size - maybe 2 cards */
+    .core-team-horizontal-grid {
+        gap: 25px;
+    }
+    .core-team-horizontal-card {
+        width: calc(50% - 15px); /* Adjust for 2 cards, considering the gap */
+        /* max-width: 320px; */
+    }
+}
+
+@media (max-width: 680px) { /* Smaller tablets / large phones - stack to 1 card */
+    .core-team-horizontal-card {
+        width: 100%;
+        max-width: 350px; /* Prevent it from becoming too wide on mobile */
+        margin-left: auto; /* Center single card if grid is still flex justify-content: center */
+        margin-right: auto;
+    }
+}

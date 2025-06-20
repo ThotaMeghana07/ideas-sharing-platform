@@ -50,7 +50,7 @@ body, html {
   position:fixed;
   background:#fff; /* This is the white background of the SVG area */
   width:100%;
-  max-width:160px; /* SVG viewport width */
+  max-width:1360px; /* SVG viewport width */
   height:100%;
   top:0;
   left:50%;
