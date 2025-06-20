@@ -1,5 +1,5 @@
 // backend/controllers/ideaController.js
-const Idea = require('../models/Idea');
+const Idea = require('./models/Idea');
 console.log('Imported Idea model:', Idea); // <--- ADD THIS LINE
 const User = require('../models/User'); // Might be needed for populating user details
 
