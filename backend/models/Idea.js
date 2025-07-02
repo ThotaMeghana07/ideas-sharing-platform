@@ -1,47 +1,38 @@
- // backend/models/Idea.js
-const mongoose = require('mongoose'); // <--- ADD THIS LINE OR ENSURE IT'S THERE
+ // backend/models/Idea.js (Updated)
+const mongoose = require('mongoose');
 
-// Then the rest of your IdeaSchema definition...
-const IdeaSchema = new mongoose.Schema( // Now mongoose.Schema will work
-    {
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: 'User',
-        },
-        title: {
-            type: String,
-            required: [true, 'Please add a title'],
-            trim: true,
-            maxlength: [100, 'Title cannot be more than 100 characters'],
-        },
-        description: {
-            type: String,
-            required: [true, 'Please add a description'],
-            trim: true,
-        },
-        tags: {
-            type: [String],
-            default: [],
-        },
-        likes: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User',
-            },
-        ],
+const IdeaSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     },
-    {
-        timestamps: true,
-        toJSON: { virtuals: true },
-        toObject: { virtuals: true }
-    }
-);
+    title: { // Even if your UI doesn't have a title field, it can be useful for summaries. We can make it optional or derive it.
+        type: String,
+        trim: false,
+        maxlength: [100, 'Title cannot be more than 100 characters']
+    },
+    text: {
+        type: String,
+        required: [true, 'Please add some text for your idea'],
+    },
+    imageUrl: { // URL of the uploaded image from Cloudinary
+        type: String,
+    },
+    videoUrl: { // URL of the uploaded video from Cloudinary
+        type: String,
+    },
+    likes: { // Array of user IDs who liked it
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        default: [],
+    },
+    comments: [ // We can embed simple comments directly
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+            text: { type: String, required: true },
+            createdAt: { type: Date, default: Date.now }
+        }
+    ]
+}, { timestamps: true }); // Using timestamps adds `createdAt` and `updatedAt` automatically
 
-IdeaSchema.virtual('likeCount').get(function() {
-    return this.likes.length;
-});
-
-const Idea = mongoose.model('Idea', IdeaSchema); // This line should now work
-
-module.exports = Idea;
+module.exports = mongoose.model('Idea', IdeaSchema);
