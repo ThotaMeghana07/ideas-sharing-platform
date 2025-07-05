@@ -1,16 +1,19 @@
-// backend/controllers/ideaController.js
+ // backend/controllers/ideaController.js
 const Idea = require('../models/Idea');
-console.log('Imported Idea model:', Idea);
-const User = require('../models/User');
+// console.log('Imported Idea model:', Idea); // Good for debugging
+// const User = require('../models/User'); // Not strictly needed here as we use refs
 
 // @desc    Get all ideas
 // @route   GET /api/ideas
 // @access  Public
 exports.getIdeas = async (req, res) => {
     try {
+        // Fetch ideas, populate user info, and also populate comments with their respective user info
         const ideas = await Idea.find({})
-            .populate('user', 'username email')
+            .populate('user', 'username') // Populate the main post's user
+            .populate('comments.user', 'username') // Populate the user for each comment
             .sort({ createdAt: -1 });
+
         res.json(ideas);
     } catch (error) {
         console.error('Error fetching ideas:', error);
@@ -24,7 +27,8 @@ exports.getIdeas = async (req, res) => {
 exports.getIdeaById = async (req, res) => {
     try {
         const idea = await Idea.findById(req.params.id)
-            .populate('user', 'username email');
+            .populate('user', 'username') // Populate the main post's user
+            .populate('comments.user', 'username'); // Populate the user for each comment
 
         if (!idea) {
             return res.status(404).json({ message: 'Idea not found' });
@@ -40,34 +44,31 @@ exports.getIdeaById = async (req, res) => {
 };
 
 
-// -------------------- MODIFIED SECTION START --------------------
 // @desc    Create a new idea
 // @route   POST /api/ideas
 // @access  Private (requires login)
 exports.createIdea = async (req, res) => {
-    // Your frontend sends a single 'text' field. We will use that.
-    const { text } = req.body;
+    // Expect `text` and optional `imageUrl`, `videoUrl` from the request body
+    const { text, imageUrl, videoUrl } = req.body;
 
-    // Validate the incoming 'text' field.
     if (!text || text.trim() === '') {
         return res.status(400).json({ message: 'Idea text is required' });
     }
 
     try {
-        const idea = new Idea({
-            // We map the frontend 'text' to the 'description' field in our database.
-            description: text,
-            // We can auto-generate a title or leave it blank if the model allows.
-            // For now, let's keep the model structured. A title can be added later from the frontend.
-            // You might need to make 'title' optional in your Idea.js model for this to work.
-            // For example, remove `required: true` from the title field in `models/Idea.js`.
+        const newIdea = new Idea({
+            text: text,
+            imageUrl: imageUrl, // Will be undefined if not provided, which is fine
+            videoUrl: videoUrl, // Will be undefined if not provided, which is fine
             user: req.user.id, // req.user is set by authMiddleware
         });
 
-        const createdIdea = await idea.save();
-        await createdIdea.populate('user', 'username email');
+        const createdIdea = await newIdea.save();
+        
+        // Populate the user field of the newly created idea before sending it back
+        const populatedIdea = await Idea.findById(createdIdea._id).populate('user', 'username');
 
-        res.status(201).json(createdIdea);
+        res.status(201).json(populatedIdea);
     } catch (error) {
         console.error('Error creating idea:', error);
         if (error.name === 'ValidationError') {
@@ -77,14 +78,14 @@ exports.createIdea = async (req, res) => {
         res.status(500).json({ message: 'Server Error creating idea' });
     }
 };
-// -------------------- MODIFIED SECTION END --------------------
 
 
 // @desc    Update an existing idea
 // @route   PUT /api/ideas/:id
 // @access  Private (only author can update)
 exports.updateIdea = async (req, res) => {
-    const { title, description, tags } = req.body;
+    // Only the 'text' field is likely updatable by the user
+    const { text } = req.body;
 
     try {
         let idea = await Idea.findById(req.params.id);
@@ -93,16 +94,19 @@ exports.updateIdea = async (req, res) => {
             return res.status(404).json({ message: 'Idea not found' });
         }
 
+        // Check if the logged-in user is the author of the idea
         if (idea.user.toString() !== req.user.id) {
             return res.status(401).json({ message: 'User not authorized to update this idea' });
         }
 
-        if (title) idea.title = title;
-        if (description) idea.description = description;
-        if (tags) idea.tags = Array.isArray(tags) ? tags : tags.split(',').map(tag => tag.trim());
+        // Update the fields if they were provided
+        if (text) idea.text = text;
+        // You might decide not to allow media URLs to be updated, or add logic here if you do.
 
         const updatedIdea = await idea.save();
-        await updatedIdea.populate('user', 'username email');
+        await updatedIdea.populate('user', 'username');
+        await updatedIdea.populate('comments.user', 'username');
+
 
         res.json(updatedIdea);
     } catch (error) {
@@ -110,9 +114,6 @@ exports.updateIdea = async (req, res) => {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(val => val.message);
             return res.status(400).json({ message: messages.join(', ') });
-        }
-        if (error.kind === 'ObjectId') {
-            return res.status(404).json({ message: 'Idea not found (invalid ID format)' });
         }
         res.status(500).json({ message: 'Server Error updating idea' });
     }
@@ -138,9 +139,6 @@ exports.deleteIdea = async (req, res) => {
         res.json({ message: 'Idea removed successfully' });
     } catch (error) {
         console.error('Error deleting idea:', error);
-        if (error.kind === 'ObjectId') {
-            return res.status(404).json({ message: 'Idea not found (invalid ID format)' });
-        }
         res.status(500).json({ message: 'Server Error deleting idea' });
     }
 };
@@ -156,25 +154,66 @@ exports.likeIdea = async (req, res) => {
             return res.status(404).json({ message: 'Idea not found' });
         }
 
-        const alreadyLiked = idea.likes.some(like => like.toString() === req.user.id);
+        // Check if the user has already liked the post
+        const alreadyLiked = idea.likes.some(likeId => likeId.equals(req.user.id));
 
         if (alreadyLiked) {
+            // Unlike the post
             idea.likes = idea.likes.filter(
-                (like) => like.toString() !== req.user.id
+                (likeId) => !likeId.equals(req.user.id)
             );
         } else {
+            // Like the post
             idea.likes.push(req.user.id);
         }
 
         await idea.save();
-        await idea.populate('user', 'username email');
+        // Populate user details before sending back
+        const populatedIdea = await Idea.findById(idea._id)
+                                    .populate('user', 'username')
+                                    .populate('comments.user', 'username');
 
-        res.json(idea);
+        res.json(populatedIdea);
     } catch (error) {
         console.error('Error liking/unliking idea:', error);
-        if (error.kind === 'ObjectId') {
-            return res.status(404).json({ message: 'Idea not found (invalid ID format)' });
-        }
         res.status(500).json({ message: 'Server Error processing like' });
+    }
+};
+
+// @desc    Add a comment to an idea
+// @route   POST /api/ideas/:id/comments
+// @access  Private (requires login)
+exports.addComment = async (req, res) => {
+    const { text } = req.body;
+
+    if (!text || text.trim() === '') {
+        return res.status(400).json({ message: 'Comment text is required' });
+    }
+
+    try {
+        const idea = await Idea.findById(req.params.id);
+
+        if (!idea) {
+            return res.status(404).json({ message: 'Idea not found' });
+        }
+
+        const newComment = {
+            text: text,
+            user: req.user.id,
+        };
+
+        idea.comments.push(newComment);
+
+        await idea.save();
+        
+        // Populate everything again before sending back
+        const populatedIdea = await Idea.findById(idea._id)
+                                    .populate('user', 'username')
+                                    .populate('comments.user', 'username');
+
+        res.status(201).json(populatedIdea);
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ message: 'Server Error adding comment' });
     }
 };

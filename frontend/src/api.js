@@ -90,3 +90,64 @@ export const getCurrentUser = async () => {
     throw error.response?.data || { message: error.message || 'Failed to fetch user profile.' };
   }
 };
+
+
+// --- MODIFICATION START: New functions for Ideas, Upvotes, and Comments ---
+
+/**
+ * Toggles an upvote on an idea.
+ * @param {string} ideaId - The ID of the idea to upvote/un-upvote.
+ */
+export const toggleUpvote = async (ideaId) => {
+  try {
+    // The backend route is likely named '/like', but we call it 'upvote' on the frontend for clarity.
+    const response = await API.put(`/ideas/${ideaId}/like`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to update upvote.' };
+  }
+};
+
+/**
+ * Updates an existing idea.
+ * @param {string} ideaId - The ID of the idea to update.
+ * @param {object} ideaData - The new data for the idea (e.g., { text }).
+ */
+export const updateIdea = async (ideaId, ideaData) => {
+  try {
+    const response = await API.put(`/ideas/${ideaId}`, ideaData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to update idea.' };
+  }
+};
+
+/**
+ * Deletes an idea.
+ * @param {string} ideaId - The ID of the idea to delete.
+ */
+export const deleteIdea = async (ideaId) => {
+  try {
+    const response = await API.delete(`/ideas/${ideaId}`);
+    return response.data;
+  } catch (error)
+  {
+    throw error.response?.data || { message: 'Failed to delete idea.' };
+  }
+};
+
+/**
+ * Adds a new comment to an idea.
+ * @param {string} ideaId - The ID of the idea to comment on.
+ * @param {object} commentData - The comment data (e.g., { text }).
+ */
+export const addComment = async (ideaId, commentData) => {
+  try {
+    const response = await API.post(`/ideas/${ideaId}/comments`, commentData);
+    return response.data; // Expects the backend to return the updated idea
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to add comment.' };
+  }
+};
+
+// --- MODIFICATION END ---

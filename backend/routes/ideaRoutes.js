@@ -1,5 +1,4 @@
-//Routes for ideas (CRUD, likes)
-// backend/routes/ideaRoutes.js
+ // backend/routes/ideaRoutes.js
 const express = require('express');
 const router = express.Router();
 const {
@@ -8,18 +7,20 @@ const {
     createIdea,
     updateIdea,
     deleteIdea,
-    likeIdea
+    likeIdea,
+    addComment
 } = require('../controllers/ideaController');
-const { protect } = require('../middleware/authMiddleware'); // Our authentication middleware
+const { protect } = require('../middleware/authMiddleware');
 
-// Public routes
-router.get('/', getIdeas);         // GET /api/ideas - Get all ideas
-router.get('/:id', getIdeaById);   // GET /api/ideas/:id - Get a single idea
+// === Public Routes ===
+router.get('/', getIdeas);
+router.get('/:id', getIdeaById);
 
-// Protected routes (require authentication)
-router.post('/', protect, createIdea);        // POST /api/ideas - Create a new idea
-router.put('/:id', protect, updateIdea);      // PUT /api/ideas/:id - Update an idea
-router.delete('/:id', protect, deleteIdea);   // DELETE /api/ideas/:id - Delete an idea
-router.put('/:id/like', protect, likeIdea);   // PUT /api/ideas/:id/like - Like/unlike an idea
+// === Protected Routes (require authentication) ===
+router.post('/', protect, createIdea);
+router.put('/:id', protect, updateIdea);
+router.delete('/:id', protect, deleteIdea);
+router.put('/:id/like', protect, likeIdea);
+router.post('/:id/comments', protect, addComment);
 
 module.exports = router;

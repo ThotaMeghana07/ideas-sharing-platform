@@ -7,11 +7,7 @@ const IdeaSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    title: { // Even if your UI doesn't have a title field, it can be useful for summaries. We can make it optional or derive it.
-        type: String,
-        trim: false,
-        maxlength: [100, 'Title cannot be more than 100 characters']
-    },
+    
     text: {
         type: String,
         required: [true, 'Please add some text for your idea'],
