@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://JAGADISH3723.github.io/ideas-sharing-platform",
+  "homepage": "https://github.com/ThotaMeghana07/ideas-sharing-platform.git",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
